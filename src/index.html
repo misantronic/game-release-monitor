@@ -1,0 +1,136 @@
+<html>
+
+<head>
+    <meta charSet="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+    <title>release-monitor</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700" rel="stylesheet">
+    <style>
+        body,
+        button,
+        input {
+            font-family: 'Roboto Mono', monospace;
+            color: #333;
+        }
+
+        body {
+            padding: 20px;
+            margin: 0;
+            font-size: 13px;
+        }
+
+        ul,
+        li {
+            list-style: none;
+            padding: 0;
+            line-height: 1.8;
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        button {
+            border: none;
+            font-size: 14px;
+            border-radius: 4px;
+            padding: 4px 8px;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #ddd;
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        p {
+            margin: 0 0 0.3rem;
+        }
+
+        img {
+            border-radius: 4px;
+        }
+
+        a {
+            color: blue;
+        }
+
+        #app {
+            max-width: 100%;
+            width: 1024px;
+            margin: 0 auto;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        img.cover {
+            max-width: 80px;
+        }
+
+        .limit-lines {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            margin-bottom: 0;
+        }
+
+        .react-slct-value {
+            border-radius: 4px;
+        }
+
+        .platform-container {
+            flex: 0 0 300px;
+        }
+
+        .game-container {
+            flex: 1;
+            margin: 0 0 0 32px;
+        }
+
+        .game-infos {
+            display: flex;
+            flex: 1;
+            padding: 0 20px;
+            justify-content: space-between;
+        }
+
+        .game-release {
+            flex: 0 0 120px;
+            text-align: right;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .platform-container {
+                flex: none;
+            }
+
+            .game-container {
+                flex: 1;
+                margin: 32px 0 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script src="./index.tsx"></script>
+</body>
+
+</html>

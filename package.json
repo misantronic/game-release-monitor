@@ -1,0 +1,42 @@
+{
+  "name": "release-monitor",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "start": "rm -rf .cache && parcel src/index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/misantronic/release-monitor.git"
+  },
+  "author": "David Schkalee <david.schkalee@magicline.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/misantronic/release-monitor/issues"
+  },
+  "homepage": "https://github.com/misantronic/release-monitor#readme",
+  "peerDependencies": {
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.10",
+    "lodash-decorators": "^6.0.0",
+    "mobx": "^5.0.3",
+    "mobx-react": "^5.2.3",
+    "mobx-state-tree": "^3.0.2",
+    "react-slct": "^1.6.10",
+    "setimmediate": "^1.0.5",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.115",
+    "@types/react": "^16.4.7",
+    "@types/react-dom": "^16.0.6",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-runtime": "^6.26.0",
+    "parcel-bundler": "^1.9.7",
+    "typescript": "^3.0.1"
+  }
+}
