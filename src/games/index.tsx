@@ -13,10 +13,7 @@ interface GamesProps {
 @observer
 export class Games extends React.Component<GamesProps> {
     private store = GamesStore.create({
-        searchQuery: '',
-        searchLoading: false,
-        searchResults: [],
-        gamesLoading: false
+        searchResults: []
     });
 
     public componentDidMount() {
@@ -30,48 +27,20 @@ export class Games extends React.Component<GamesProps> {
     }
 
     public render(): React.ReactNode {
-        const { id, name } = this.props.platform;
+        const { name } = this.props.platform;
 
         return (
             <div className="game-container">
                 <h2>Games for {name}</h2>
                 <ul>
                     {this.store.games.map(item => (
-                        <li key={item.id}>
-                            {item.cover && (
-                                <div>
-                                    <img
-                                        className="cover"
-                                        src={`https://images.igdb.com/igdb/image/upload/t_cover_big/${
-                                            item.cover.cloudinary_id
-                                        }.jpg`}
-                                    />
-                                </div>
-                            )}
-                            <div className="game-infos">
-                                <div>
-                                    <p>
-                                        <b>
-                                            <a
-                                                href={
-                                                    this.store.firstWebsite(
-                                                        item
-                                                    ) || '#'
-                                                }
-                                                target="_blank"
-                                            >
-                                                {item.name}
-                                            </a>
-                                        </b>
-                                    </p>
-                                    <p className="limit-lines">
-                                        {item.summary}
-                                    </p>
-                                </div>
-                                <span className="game-release">
-                                    {this.store.firstReleaseDate(item, id)}
-                                </span>
-                            </div>
+                        <li
+                            key={item.id}
+                            data-game={item.id}
+                            onClick={this.onExpandGame}
+                        >
+                            {this.renderCover(item)}
+                            {this.renderGameInfos(item)}
                             <button
                                 data-game={item.id}
                                 onClick={this.onRemoveGame}
@@ -96,6 +65,80 @@ export class Games extends React.Component<GamesProps> {
         );
     }
 
+    private renderCover(game: typeof Game.Type) {
+        if (!game.cover) {
+            return null;
+        }
+
+        return (
+            <div>
+                <img
+                    className="cover"
+                    src={this.store.getImage(game.cover.cloudinary_id)}
+                />
+            </div>
+        );
+    }
+
+    private renderGameInfos(game: typeof Game.Type) {
+        const { gameExpanded } = this.store;
+        return (
+            <div className="game-infos">
+                <div className="title">
+                    <b>
+                        <a
+                            href={this.store.firstWebsite(game) || '#'}
+                            target="_blank"
+                        >
+                            {game.name}
+                        </a>
+                    </b>
+                    <div className="game-release">
+                        {this.store.firstReleaseDate(
+                            game,
+                            this.props.platform.id
+                        )}
+                    </div>
+                </div>
+                <div>
+                    <div
+                        className={
+                            gameExpanded === game.id
+                                ? 'game-summary'
+                                : 'limit-lines game-summary'
+                        }
+                    >
+                        {game.summary}
+                    </div>
+                    {gameExpanded === game.id &&
+                        game.screenshots && (
+                            <div className="game-gallery">
+                                {game.screenshots.map(s => {
+                                    const src = this.store.getImage(
+                                        s.cloudinary_id
+                                    );
+                                    const srcBig = this.store.getImage(
+                                        s.cloudinary_id,
+                                        't_screenshot_huge'
+                                    );
+
+                                    return (
+                                        <a
+                                            key={srcBig}
+                                            href={srcBig}
+                                            target="_blank"
+                                        >
+                                            <img src={src} />
+                                        </a>
+                                    );
+                                })}
+                            </div>
+                        )}
+                </div>
+            </div>
+        );
+    }
+
     private onAddGame(game: typeof Game.Type): void {
         this.store.add(game, this.props.platform);
     }
@@ -104,6 +147,19 @@ export class Games extends React.Component<GamesProps> {
         const gameId = parseInt(e.currentTarget.getAttribute('data-game')!);
 
         this.store.remove(gameId);
+    }
+
+    private onExpandGame(e: React.SyntheticEvent<HTMLLIElement>): void {
+        const { target } = e;
+
+        if (
+            target instanceof HTMLDivElement &&
+            target.classList.contains('game-summary')
+        ) {
+            const gameId = parseInt(e.currentTarget.getAttribute('data-game')!);
+
+            this.store.expandGame(gameId);
+        }
     }
 
     @debounce(600, { trailing: true })

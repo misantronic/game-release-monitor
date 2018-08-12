@@ -101,14 +101,41 @@
 
         .game-infos {
             display: flex;
+            flex-direction: column;
             flex: 1;
             padding: 0 20px;
+        }
+
+        .game-infos .title {
+            display: flex;
             justify-content: space-between;
+            margin-bottom: 0.3rem;
         }
 
         .game-release {
             flex: 0 0 120px;
             text-align: right;
+            white-space: nowrap;
+        }
+
+        .game-summary {
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+        }
+
+        .game-gallery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .game-gallery a {
+            display: block;
+            width: 31%;
+            margin: 1%;
+        }
+
+        .game-gallery img {
+            width: 100%;
         }
 
         @media (max-width: 900px) {

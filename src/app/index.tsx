@@ -11,6 +11,18 @@ import { Platform } from '../state/platform';
 export class App extends React.Component {
     private store = AppStore.create();
 
+    public componentDidMount() {
+        const id = this.store.getPlatformIdFromHash();
+
+        if (id) {
+            const platform = this.store.loadPlatform(id);
+
+            if (platform) {
+                this.store.setSelectedPlatform(platform);
+            }
+        }
+    }
+
     public render(): React.ReactNode {
         const { selectedPlatform } = this.store;
 
@@ -26,6 +38,6 @@ export class App extends React.Component {
     }
 
     private onSelect(platform?: typeof Platform.Type): void {
-        this.store.setSelectedPlatform(platform);
+        this.store.setSelectedPlatform({ ...platform } as any);
     }
 }

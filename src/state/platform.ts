@@ -1,4 +1,5 @@
 import { types, flow, detach } from 'mobx-state-tree';
+import { API, headers } from './__config';
 
 export const Platform = types.model('Platform', {
     id: types.identifierNumber,
@@ -52,12 +53,9 @@ export const PlatformStore = types
             self.searchQuery = q;
 
             const response = yield fetch(
-                `http://cors-anywhere.herokuapp.com/https://api-endpoint.igdb.com/platforms/?search=${q}&fields=id,name`,
+                `${API}/platforms/?search=${q}&fields=id,name`,
                 {
-                    headers: {
-                        'user-key': '38e54e90206e216b13e77800b4b4d40d',
-                        Accept: 'application/json'
-                    }
+                    headers
                 }
             );
             const results = yield response.json();

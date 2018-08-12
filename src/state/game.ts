@@ -1,5 +1,28 @@
 import { types, flow, detach } from 'mobx-state-tree';
 import { Platform } from './platform';
+import { API, headers } from './__config';
+
+const fields = [
+    'id',
+    'name',
+    'release_dates',
+    'cover',
+    'summary',
+    'websites',
+    'screenshots'
+];
+
+type ImageType =
+    | 't_cover_small'
+    | 't_screenshot_med'
+    | 't_cover_big'
+    | 't_logo_med'
+    | 't_screenshot_big'
+    | 't_screenshot_huge'
+    | 't_thumb'
+    | 't_micro'
+    | 't_720p'
+    | 't_1080p';
 
 export const ReleaseDate = types.model('ReleaseDate', {
     category: types.maybe(types.number),
@@ -11,7 +34,7 @@ export const ReleaseDate = types.model('ReleaseDate', {
     y: types.maybe(types.number)
 });
 
-export const Cover = types.model('Cover', {
+export const Image = types.model('Image', {
     cloudinary_id: types.string,
     url: types.string,
     width: types.number,
@@ -27,9 +50,10 @@ export const Game = types.model('Game', {
     id: types.identifierNumber,
     name: types.string,
     release_dates: types.array(ReleaseDate),
-    cover: types.maybe(Cover),
+    cover: types.maybe(Image),
     summary: types.maybe(types.string),
-    websites: types.maybe(types.array(Website))
+    websites: types.maybe(types.array(Website)),
+    screenshots: types.maybe(types.array(Image))
 });
 
 export const GameTypeModel = types.array(types.number);
@@ -39,11 +63,12 @@ const sortGames = (a: typeof Game.Type, b: typeof Game.Type) =>
 
 export const GamesStore = types
     .model('GamesStore', {
-        searchQuery: types.string,
+        searchQuery: types.maybe(types.string),
         searchResults: types.array(Game),
-        searchLoading: types.boolean,
+        searchLoading: types.maybe(types.boolean),
         games: types.array(Game),
-        gamesLoading: types.boolean
+        gamesLoading: types.maybe(types.boolean),
+        gameExpanded: types.maybe(types.number)
     })
     .views(self => ({
         firstReleaseDate(game: typeof Game.Type, platform: number) {
@@ -68,6 +93,11 @@ export const GamesStore = types
             return null;
         },
 
+        getImage(id: string, type: ImageType = 't_cover_big') {
+            // prettier-ignore
+            return `https://images.igdb.com/igdb/image/upload/${type}/${id}.jpg`
+        },
+
         get searchResultOptions() {
             return self.searchResults.map(game => ({
                 label: game.name,
@@ -88,14 +118,9 @@ export const GamesStore = types
                 storage.filter(([p]) => p === platformId).map(
                     flow(function*([_, gameId]) {
                         const response = yield fetch(
-                            `http://cors-anywhere.herokuapp.com/https://api-endpoint.igdb.com/games/${gameId}?filter[release_dates.platform][eq]=${platformId}&fields=id,name,release_dates,cover,summary,websites`,
-                            {
-                                headers: {
-                                    'user-key':
-                                        '38e54e90206e216b13e77800b4b4d40d',
-                                    Accept: 'application/json'
-                                }
-                            }
+                            // prettier-ignore
+                            `${API}/games/${gameId}?filter[release_dates.platform][eq]=${platformId}&fields=${fields.join(',')}`,
+                            { headers }
                         );
 
                         const game = (yield response.json())[0];
@@ -140,13 +165,9 @@ export const GamesStore = types
             self.searchResults = [] as any;
 
             const response = yield fetch(
-                `http://cors-anywhere.herokuapp.com/https://api-endpoint.igdb.com/games/?search=${q}&filter[release_dates.platform][eq]=${platformId}&fields=id,name,release_dates,cover,summary`,
-                {
-                    headers: {
-                        'user-key': '38e54e90206e216b13e77800b4b4d40d',
-                        Accept: 'application/json'
-                    }
-                }
+                // prettier-ignore
+                `${API}/games/?search=${q}&filter[release_dates.platform][eq]=${platformId}&fields=${fields.join(',')}`,
+                { headers }
             );
 
             self.searchResults = yield response.json();
@@ -156,5 +177,13 @@ export const GamesStore = types
         resetSearch: () => {
             self.searchQuery = '';
             self.searchResults = [] as any;
+        },
+
+        expandGame: (gameId?: number) => {
+            if (self.gameExpanded === gameId) {
+                self.gameExpanded = undefined;
+            } else {
+                self.gameExpanded = gameId;
+            }
         }
     }));
